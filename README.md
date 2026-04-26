@@ -4,9 +4,7 @@ A full-stack RFQ auction system built for the British Auction assignment. Buyers
 
 ## Live Demo
 
-- Frontend: https://rfqauction.vercel.app
-- Backend: https://rfq-auction.onrender.com
-- GitHub: https://github.com/sattvik-shukla/rfq-auction
+https://rfqauction.vercel.app
 
 ## Submission Snapshot
 
