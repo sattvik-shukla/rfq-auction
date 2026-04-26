@@ -9,29 +9,30 @@ Provide a simple RFQ platform where:
 - the system auto-extends auctions near close based on configurable rules
 - bidding never continues beyond the forced close time
 
+---
+
 ## Architecture Diagram
 
-![Architecture Diagram](rfq_architecture_diagram.png)
+![Architecture Diagram](architecture_hld.png)
 
-## Main Components
+### Main Components
 
-### Frontend
-
+**Frontend**
 - React + Vite single-page app
 - Zustand store for RFQ, bid, log, and socket state
 - Tailwind UI for listing, detail, and create flows
 
-### Backend
-
+**Backend**
 - Express REST APIs for RFQs and bids
 - Service layer for validation, ranking, and extension rules
 - Socket.io for live auction updates
 - Scheduler to activate pending auctions and close expired ones
 
-### Database
-
+**Database**
 - MongoDB stores RFQs, bids, and auction logs
 - Latest bids are tracked per supplier using `isLatestBySupplier`
+
+---
 
 ## Request Flow
 
@@ -59,7 +60,11 @@ Provide a simple RFQ platform where:
 3. New bids and extensions emit room-scoped events
 4. UI updates bid table, countdown, activity log, and viewer count
 
+---
+
 ## Lifecycle Model
+
+![Lifecycle Diagram](lifecycle_state_machine.png)
 
 RFQ statuses:
 
@@ -72,10 +77,12 @@ RFQ statuses:
 
 Lifecycle rules:
 
-- pending auctions become active once the start time passes
-- active or extended auctions close once effective close time passes
-- auctions never extend beyond forced close
-- no-bid auctions are marked `no_bids`
+- Pending auctions become active once the start time passes
+- Active or extended auctions close once effective close time passes
+- Auctions never extend beyond forced close time
+- No-bid auctions are marked `no_bids`
+
+---
 
 ## British Auction Rule Engine
 
@@ -90,27 +97,17 @@ Configurable inputs:
 
 Supported triggers:
 
-- `BID_RECEIVED`
-- `ANY_RANK_CHANGE`
-- `L1_RANK_CHANGE`
+- `BID_RECEIVED` — extends on any new bid inside the trigger window
+- `ANY_RANK_CHANGE` — extends only if rankings shifted
+- `L1_RANK_CHANGE` — extends only if the L1 position changed
 
-## Collections
+Extension is blocked if `extensionCount >= maxExtensions` or if the new close time would exceed `forcedBidCloseTime`.
 
-### RFQs
-
-Stores schedule, lifecycle status, extension count, and British Auction config.
-
-### Bids
-
-Stores bid amounts, total amount, quote details, timestamp, latest flag, and rank.
-
-### Auction Logs
-
-Stores audit events such as bid submissions, extensions, and closures.
+---
 
 ## Design Notes
 
 - Ranking is deterministic: lower total wins, earlier submission breaks ties.
 - Extension logic is isolated from controllers inside the service and utility layers.
-- Socket events are room-based, which keeps real-time traffic scoped per RFQ.
+- Socket events are room-based, keeping real-time traffic scoped per RFQ.
 - Scheduler logic keeps long-running auction state aligned even without user interaction.

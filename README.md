@@ -8,12 +8,31 @@ https://rfqauction.vercel.app
 
 Backend is hosted on Render's free tier and may take 50+ seconds to wake up on first request.
 
+## Table of Contents
+
+- [Submission Snapshot](#submission-snapshot)
+- [Assignment Coverage](#assignment-coverage)
+- [Core Features](#core-features)
+- [Pages](#pages)
+- [Architecture](#architecture)
+- [Schema Design](#schema-design)
+- [Auction Lifecycle](#auction-lifecycle)
+- [API Summary](#api-summary)
+- [Real-Time Events](#real-time-events)
+- [Local Setup](#local-setup)
+- [Environment Variables](#environment-variables)
+- [Extra Improvements](#extra-improvements)
+- [Judge Guide](#judge-guide)
+- [Verification](#verification)
+
 ## Submission Snapshot
 
 - Backend: Node.js, Express, MongoDB, Socket.io
 - Frontend: React, Vite, Tailwind, Zustand
 - HLD: [docs/HLD.md](docs/HLD.md)
-- Architecture diagram: [docs/rfq_architecture_diagram.png](docs/rfq_architecture_diagram.png)
+- Architecture diagram: [docs/architecture_hld.png](docs/architecture_hld.png)
+- Schema design: [docs/SCHEMA.md](docs/SCHEMA.md)
+- Lifecycle diagram: [docs/lifecycle_state_machine.png](docs/lifecycle_state_machine.png)
 - Verification notes: [docs/VERIFICATION.md](docs/VERIFICATION.md)
 
 ## Assignment Coverage
@@ -96,7 +115,7 @@ The detail page shows:
 
 ## Architecture
 
-![Architecture Diagram](docs/rfq_architecture_diagram.png)
+![Architecture Diagram](docs/architecture_hld.png)
 
 High-level flow:
 
@@ -108,6 +127,10 @@ High-level flow:
 6. A scheduler keeps pending auctions moving to active and closes expired auctions.
 
 ## Schema Design
+
+![Schema Diagram](docs/schema_design.png)
+
+See [docs/SCHEMA.md](docs/SCHEMA.md) for the full field-level breakdown of all collections.
 
 ### `rfqs`
 
@@ -145,6 +168,19 @@ High-level flow:
 - `description`
 - `metadata`
 - `timestamp`
+
+## Auction Lifecycle
+
+![Lifecycle Diagram](docs/lifecycle_state_machine.png)
+
+RFQ status transitions:
+
+- `pending` → `active` once bid start time passes
+- `active` → `extended` when a qualifying bid arrives inside the trigger window
+- `extended` → `extended` on each subsequent qualifying bid
+- `active` / `extended` → `closed` when effective close time passes
+- `active` / `extended` → `force_closed` when the hard deadline passes
+- `closed` / `force_closed` → `no_bids` if zero bids were received
 
 ## API Summary
 
@@ -230,15 +266,6 @@ VITE_API_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
-## Judge Guide
-
-Recommended review flow:
-
-1. Open `/auctions` to inspect the listing page.
-2. Open any live auction to see bid rankings, log updates, and live countdown behavior.
-3. Create a new RFQ from `/create`.
-4. Use seeded auctions to test extension logic quickly.
-
 ## Extra Improvements
 
 Beyond the core assignment, the project also includes:
@@ -250,6 +277,15 @@ Beyond the core assignment, the project also includes:
 - Quote validity warning
 - Max extensions support
 - Seed data for quick evaluation
+
+## Judge Guide
+
+Recommended review flow:
+
+1. Open `/auctions` to inspect the listing page.
+2. Open any live auction to see bid rankings, log updates, and live countdown behavior.
+3. Create a new RFQ from `/create`.
+4. Use seeded auctions to test extension logic quickly.
 
 ## Verification
 
