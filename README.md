@@ -6,6 +6,8 @@ A full-stack RFQ auction system built for the British Auction assignment. Buyers
 
 https://rfqauction.vercel.app
 
+Backend is hosted on Render's free tier and may take 50+ seconds to wake up on first request.
+
 ## Submission Snapshot
 
 - Backend: Node.js, Express, MongoDB, Socket.io
