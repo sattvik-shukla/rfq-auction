@@ -2,6 +2,12 @@
 
 A full-stack RFQ auction system built for the British Auction assignment. Buyers can create RFQs, suppliers can place live bids, the system auto-extends auctions near closing time, and auctions never cross the forced close deadline.
 
+## Live Demo
+
+- Frontend: https://rfqauction.vercel.app
+- Backend: https://rfq-auction.onrender.com
+- GitHub: https://github.com/sattvik-shukla/rfq-auction
+
 ## Submission Snapshot
 
 - Backend: Node.js, Express, MongoDB, Socket.io
